@@ -22,11 +22,133 @@ const mystery5 = [4, 9, 1, 3, 5, 4, 0, 4, 6, 3, 0, 7, 2, 5, 2, 3];
 // An array of all the arrays above
 const batch = [valid1, valid2, valid3, valid4, valid5, invalid1, invalid2, invalid3, invalid4, invalid5, mystery1, mystery2, mystery3, mystery4, mystery5];
 
+// Find the first digit 
+function firstDigit(n) 
+{ 
+    // Find total number of digits - 1 
+    let digits = Math.floor(Math.log(n)/Math.log(10)) 
+    // Find first digit 
+    n = Math.floor(n / Math.pow(10, digits)) 
+    // Return first digit 
+    return n; 
+} 
+  
+// Find the last digit 
+function lastDigit(n){ 
+    // return the last digit 
+    return (n % 10) 
+} 
+
 
 // Add your functions below:
 function validateCred(arr){
+    //  validate with luhn algoritm
+    let firstSum=0;
+    let doubleSum=0;
+    let allsum=0;
+    let arrLength = arr.length;
+    let mode= "first";
+
+    for(let i=arrLength-1; i>=0; i--){
+        
+
+            
+        if(mode==="first"){
+            
+            firstSum += arr[i];
+            
+
+            // change to mode "second"
+            mode="second";
+            
+        }else if(mode==="second"){
+            // double the number first
+            let doubleNum= arr[i]*2;
+            // check if doubleNum is 2 digits (algo)
+            
+            if(doubleNum>9){
+                // if number 2 digits
+                doubleSum += firstDigit(doubleNum)+lastDigit(doubleNum);
+            }else{
+                doubleSum += doubleNum
+            }
+            
+            // change to mode "first"
+            mode="first"   
+        }
+    }
+
+    // validate CC
+    allsum =firstSum+doubleSum
+    
+
+    if(allsum%10!==0){
+        return false;
+    }
+    return true;
 
 }
+
+function findInvalidCards(batch){
+    
+    
+    // dont use map because we only want to return invalid card only (map will return array that are the same length as the original array)
+    let invalidCard=batch.filter(arrCred => {
+        if(!validateCred(arrCred)){
+            
+            return arrCred;
+        }
+
+    });
+
+    return invalidCard;
+}
+
+
+let invalidList = findInvalidCards(batch);
+
+function idInvalidCardCompanies(invalidArr){
+
+    let uniqueCard = []
+    let companyArr = []
+    for(let i =0 ; i < invalidArr.length; i++){
+     
+     
+
+        
+        if(uniqueCard.includes(invalidArr[i][0])){
+        
+            continue; 
+           
+        }
+
+        uniqueCard.push(invalidArr[i][0]);
+     
+        switch (invalidArr[i][0]){
+            case 3:
+                 companyArr.push("Amex (American Express)");
+                 break;
+            case 4 :
+                 companyArr.push("Visa");
+                 break;
+            case 5 :
+                 companyArr.push("Mastercard");
+                 break;
+            case 6 :
+                 companyArr.push("Discover");
+                 break;
+            default :
+                 companyArr.push("Company not found");
+                 break;
+        }
+     
+    }
+    
+    return companyArr;
+}
+
+const invalidCompany = idInvalidCardCompanies(invalidList)
+
 
 
 
